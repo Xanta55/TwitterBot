@@ -7,6 +7,7 @@
 #@: @Gerhards1966S
 #PW: BotsInMyPants
 #Dev-name: Piggud
+import random
 import time
 import tweepy
 
@@ -41,6 +42,17 @@ def store_last_seen_id(last_seen_id, file_name):
     f_write.close()
     return
 
+
+# Swap function
+def swap(list, pos1, pos2):
+    # popping both the elements from list
+    first_ele = list.pop(pos1)
+    second_ele = list.pop(pos2 - 1)
+    # inserting in each others positions
+    list.insert(pos1, second_ele)
+    list.insert(pos2, first_ele)
+    return list
+
 # Antowrtet auf Tweet
 def answer(templateWithContent, tweetToAnswer):
     pass
@@ -48,24 +60,40 @@ def answer(templateWithContent, tweetToAnswer):
 
 # Füllt einen String mit Themen
 def prepTemplate(templateToFill, content):
-    pass
+    return templateToFill.replace(";;;;", content)
 
 
 # Entfernt einige wenige Buchstaben/ verdreht sie
 # (dient der Menschlichkeit eines Templates)
-def dumbify(inputText):
-    pass
+def dumbify(inputText, gradeOfDestruction):
+    listOfChars = list()
+    for x in inputText:
+        listOfChars.append(x)
+
+    for y in range(round(gradeOfDestruction/2)):
+        listOfChars.remove(random.choice(listOfChars))
+
+    for z in range(round(gradeOfDestruction/2)):
+        ranNum = random.randint(0, len(listOfChars)-1)
+        swap(listOfChars, ranNum, ranNum+1) # len(list)
+
+    return "".join(listOfChars)
 
 
 # Gibt die gewuenschte Speicherstruktur, gefüllt mit Templates wieder
 # bsp: var antworten = getTeamplatesFromFile("./antworten.txt")
 def getTemplatesFromFile(filepath):
-    pass
-
+    try:
+        file = open(filepath, "r")
+        contents = file.readlines()
+    finally:
+        file.close()
+    print("loaded templates!")
+    return contents
 
 # gibt einen einzelnen. zufälligen String wieder aus dem gegebenen Speichermedium (etwa Array oder List)
 def getRandomTemplate(templates):
-    pass
+    return random.choice(templates)
 
 
 # gitb den nächsten zu bearbeitenden Tweet aus einer api wieder
@@ -91,9 +119,11 @@ inLoop = 1
 
 while inLoop == 1:
     nextTweet = getNextTweet(api)
-    templates = getTemplatesFromFile("./templates.txt")
-    theme = "die Wirtschaftskonjunktur der deutschan Nation"
-    answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
-    time.sleep(60)
+    templates = getTemplatesFromFile(FILE_NAME_TEMPLATES)
+    print(templates)
+    theme = "die Wirtschaftskonjunktur der deutschen Nation"
+    print(dumbify((prepTemplate(getRandomTemplate(templates), theme)), 2))
+    # answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
+    # time.sleep(60)
     # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
-
+    inLoop = 0
