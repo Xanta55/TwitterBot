@@ -4,13 +4,11 @@
 # ------------------------------------------------- #  
 
 #USER: UEBERALLBOTS
-#@: @uberallbots
+#@: @Gerhards1966S
 #PW: BotsInMyPants
 #Dev-name: Piggud
 import time
-
 import tweepy
-
 
 # ---------------------------------------------------------------------- #
 # Hier alles an Notizen:
@@ -28,6 +26,20 @@ import tweepy
 # TODO
 # answer(String templateMitFill, Tweet tweetDerBeantwortetWird)
 # bsp: answer(dumbify(prepTemplate(template, theme)), inputTweet)
+
+# Zieht sich die zuletzt gesehene ID aus der Textdatei
+def retrieve_last_seen_id(file_name):
+    f_read = open(FILE_NAME_ID, 'r')
+    last_seen_id = int(f_read.read().strip())
+    f_read.close()
+    return last_seen_id
+
+# Speichert die zuletzt gesehene ID in der Textdatei
+def store_last_seen_id(last_seen_id, file_name):
+    f_write = open(FILE_NAME_ID, 'w')
+    f_write.write(str(last_seen_id))
+    f_write.close()
+    return
 
 # Antowrtet auf Tweet
 def answer(templateWithContent, tweetToAnswer):
@@ -73,6 +85,8 @@ ACCESS_SECRET = 'kik1JvgMJ3zHVb9rD1FZ89yqp62XaqnlWSWbagGVLnMUT'
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
+FILE_NAME_ID = 'last_seen_id.txt'
+FILE_NAME_TEMPLATES = 'templates.txt'
 inLoop = 1
 
 while inLoop == 1:
