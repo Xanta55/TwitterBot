@@ -42,7 +42,6 @@ def store_last_seen_id(last_seen_id, file_name):
     f_write.close()
     return
 
-
 # Swap function
 def swap(list, pos1, pos2):
     # popping both the elements from list
@@ -102,12 +101,19 @@ def searchForTweets(api, hashtag):
 def reply_to_tweets():
     search = searchForTweets(api, "#Corona")
     nextTweet = search[0]
+    last_seen_id = retrieve_last_seen_id(FILE_NAME_ID)
+    mentions = api.mentions_timeline(last_seen_id, tweet_mode = 'extended')
+
+    for mention in reversed(mentions):
+        last_seen_id = mention.id
+        store_last_seen_id(last_seen_id, FILE_NAME_ID)
+        api.update_status("@" + mention.user.screen_name + "Antwort", mention.id)
+
 #   templates = getTemplatesFromFile("./templates.txt")
     theme = "die Wirtschaftskonjunktur der deutschan Nation"
 #   answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
-    api.update_status("@" + nextTweet.user.screen_name + " I like this.", in_reply_to_status_id = nextTweet.id)
+    api.update_status("@" + nextTweet.user.screen_name + " I like this.", nextTweet.id)
     pass
-
 # ---------------------------------------------------------------------- #
 # MainLoop:
 
@@ -122,19 +128,9 @@ auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 FILE_NAME_ID = 'last_seen_id.txt'
 FILE_NAME_TEMPLATES = 'templates.txt'
-loop = 1
 
-while loop == 1:
-    templates = getTemplatesFromFile(FILE_NAME_TEMPLATES)
-    print(templates)
-    theme = "die Wirtschaftskonjunktur der deutschen Nation"
-    print(dumbify((prepTemplate(getRandomTemplate(templates), theme)), 2))
-    # answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
-    # time.sleep(60)
-    # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
-    loop = 0
-
-while loop == 2:
+while True:
     reply_to_tweets()
     time.sleep(60)
     # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
+
