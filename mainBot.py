@@ -23,6 +23,16 @@ api = tweepy.API(auth)
 # durch api kann man sich alles abholen
 # Objekte sind wie ResultSets in Datenbanken zu behandeln, nur einfacher
 
+var inLoop = true
+var tweetCursor = tweepy.Cursor(api.mentions_timeline)
+
+while(isLoop):
+    try:
+        # cursor.next()
+        pass
+    except tweepy.RateLimitError:
+        # time.sleep(15*60)
+        pass
 
 # """ followed jedem follower zurueck """
 # for follower in tweepy.Cursor(api.followers).items():
@@ -40,13 +50,35 @@ api = tweepy.API(auth)
 # for tweet in mentions:
 #     print(tweet.text)
 
-print('mentions:')
-mentions = api.mentions_timeline()
-for mention in mentions:
-    print(mention.author.name)
-    print(mention.text)
+# print('mentions:')
+# mentions = api.mentions_timeline()
+# for mention in mentions:
+#     print(mention.author.name)
+#     print(mention.text)
 
-print('\ntimeline:')
-tweets = api.home_timeline()
-for tweet in tweets:
-    print(tweet.text)
+# print('\ntimeline:')
+# tweets = api.home_timeline()
+# for tweet in tweets:
+#     print(tweet.text)
+    
+# TODO
+# answer(String templateMitFill, Tweet tweetDerBeantwortetWird)
+# bsp: answer(dumbify(prepTemplate(template, theme)), inputTweet)
+
+# Antowrtet auf Tweet
+def answer(templateWithContent, tweetToAnswer):
+    
+    pass
+
+# Füllt einen String mit Themen
+def prepTemplate(templateToFill, content):
+    
+    pass
+
+# Entfernt einige wenige Buchstaben/ verdreht sie
+# (dient der Menschlichkeit eines Templates)
+def dumbify(inputText):
+    
+    pass
+
+
