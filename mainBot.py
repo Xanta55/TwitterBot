@@ -23,10 +23,10 @@ api = tweepy.API(auth)
 # durch api kann man sich alles abholen
 # Objekte sind wie ResultSets in Datenbanken zu behandeln, nur einfacher
 
-var inLoop = true
-var tweetCursor = tweepy.Cursor(api.mentions_timeline)
+inLoop = 1
+tweetCursor = tweepy.Cursor(api.mentions_timeline)
 
-while(isLoop):
+while inLoop:
     try:
         # cursor.next()
         pass
@@ -81,4 +81,14 @@ def dumbify(inputText):
     
     pass
 
+# Gibt die gewuenschte Speicherstruktur, gefüllt mit Templates wieder
+# bsp: var antworten = getTeamplatesFromFile("./antworten.txt")
+def getTemplatesFromFile(filepath):
 
+    pass
+
+
+# gibt einen einzelnen. zufälligen String wieder aus dem gegebenen Speichermedium (etwa Array oder List)
+def getRandomTemplate():
+
+    pass
