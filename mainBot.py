@@ -67,11 +67,9 @@ def getTemplatesFromFile(filepath):
 def getRandomTemplate(templates):
     pass
 
-
-# gitb den nächsten zu bearbeitenden Tweet aus einer api wieder
-def getNextTweet(api):
-    return api.get_list
-    pass
+# Sucht mit dem #Corona nach den aktuellsten deutschen Tweets
+def searchForTweets(api, hashtag):
+    return api.search(hashtag)
 
 # ---------------------------------------------------------------------- #
 # MainLoop:
@@ -87,13 +85,14 @@ auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 FILE_NAME_ID = 'last_seen_id.txt'
 FILE_NAME_TEMPLATES = 'templates.txt'
-inLoop = 1
 
-while inLoop == 1:
-    nextTweet = getNextTweet(api)
-    templates = getTemplatesFromFile("./templates.txt")
+while True:
+    search = searchForTweets(api, "#Corona")
+    nextTweet = search[0]
+ #   templates = getTemplatesFromFile("./templates.txt")
     theme = "die Wirtschaftskonjunktur der deutschan Nation"
-    answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
+ #   answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
+    api.update_status("@" + nextTweet.user.screen_name + " I like this.", in_reply_to_status_id = nextTweet.id)
     time.sleep(60)
     # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
 
