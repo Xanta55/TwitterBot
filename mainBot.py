@@ -4,7 +4,7 @@
 # ------------------------------------------------- #  
 
 #USER: UEBERALLBOTS
-#@: @uberallbots
+#@: @Gerhards1966S
 #PW: BotsInMyPants
 #Dev-name: Piggud
 import tweepy
@@ -22,6 +22,8 @@ auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 # durch api kann man sich alles abholen
 # Objekte sind wie ResultSets in Datenbanken zu behandeln, nur einfacher
+
+FILE_NAME_ID = 'last_seen_id.txt'
 
 inLoop = 1
 tweetCursor = tweepy.Cursor(api.mentions_timeline)
@@ -65,6 +67,20 @@ while inLoop:
 # answer(String templateMitFill, Tweet tweetDerBeantwortetWird)
 # bsp: answer(dumbify(prepTemplate(template, theme)), inputTweet)
 
+# Zieht sich die zuletzt gesehene ID aus der Textdatei
+def retrieve_last_seen_id(file_name):
+    f_read = open(FILE_NAME_ID, 'r')
+    last_seen_id = int(f_read.read().strip())
+    f_read.close()
+    return last_seen_id
+
+# Speichert die zuletzt gesehene ID in der Textdatei
+def store_last_seen_id(last_seen_id, file_name):
+    f_write = open(FILE_NAME_ID, 'w')
+    f_write.write(str(last_seen_id))
+    f_write.close()
+    return
+
 # Antowrtet auf Tweet
 def answer(templateWithContent, tweetToAnswer):
     
@@ -92,3 +108,4 @@ def getTemplatesFromFile(filepath):
 def getRandomTemplate():
 
     pass
+
