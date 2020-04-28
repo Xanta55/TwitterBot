@@ -22,7 +22,8 @@ auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 FILE_NAME_ID = 'lastSeenId.txt'
-FILE_NAME_TEMPLATES = 'templates.txt'
+FILE_NAME_TEMPLATES = 'templatesToFill.txt'
+FILE_NAME_TEMPLATES_DONE = 'templatesDone.txt'
 
 # ---------------------------------------------------------------------- #
 # Hier alles an Notizen:
@@ -123,18 +124,9 @@ def getRandomTemplate(templates):
 def searchForTweets(api, hashtag):
     return api.search(hashtag)
 
-def replyToTweets(hashtag):
+def replyToSearchedTweets(hashtag):
     search = searchForTweets(api, hashtag)
     nextTweet = search[0]
-    lastSeenId = retrieve_lastSeenId(FILE_NAME_ID)
-    mentions = api.mentions_timeline(lastSeenId, tweet_mode = 'extended')
-
-    for mention in reversed(mentions):
-        lastSeenId = mention.id
-        storeLastSeenId(lastSeenId, FILE_NAME_ID)
-        api.update_status("@" + mention.user.screen_name + " Antwort", mention.id)
-        time.sleep(5)
-
     #   templates = getTemplatesFromFile("./templates.txt")
     theme = "die Wirtschaftskonjunktur der deutschan Nation"
     #   answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
@@ -143,7 +135,7 @@ def replyToTweets(hashtag):
 
 
 def printTrends(place):
-    trends_result = api.trends_place(23424829, place)
+    trends_result = api.trends_place(place)
     for trend in trends_result[0]["trends"]:
         print(trend["name"])
 
@@ -152,7 +144,8 @@ def printTrends(place):
 # MainLoop:
 
 while True:
-    replyToTweets("#Corona")
+#    replyToSearchedTweets("#Corona")
+    printTrends(23424829)
     time.sleep(60)
     # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
 
