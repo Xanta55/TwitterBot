@@ -122,7 +122,7 @@ def getRandomTemplate(templates):
 
 # Sucht mit dem #Corona nach den aktuellsten deutschen Tweets
 def searchForTweets(api, hashtag):
-    return api.search(hashtag)
+    return api.search(hashtag, "de")
 
 def replyToSearchedTweets(hashtag):
     search = searchForTweets(api, hashtag)
