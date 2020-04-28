@@ -38,9 +38,6 @@ FILE_NAME_TEMPLATES_NO_HASH = 'templatesDone.txt'
 
 # ---------------------------------------------------------------------- #
 
-# TODO
-# answer(String templateMitFill, Tweet tweetDerBeantwortetWird)
-# bsp: answer(dumbify(prepTemplate(template, theme)), inputTweet)
 
 # Zieht sich die zuletzt gesehene ID aus der Textdatei
 def retrieve_lastSeenId(fileName):
@@ -58,17 +55,18 @@ def storeLastSeenId(lastSeenId, fileName):
     return
 
 
-# Swap function
+# Swap function für Elemente einer Liste
 def swap(list, pos1, pos2):
-    # popping both the elements from list
     firstEle = list.pop(pos1)
     secondEle = list.pop(pos2 - 1)
-    # inserting in each others positions
     list.insert(pos1, secondEle)
     list.insert(pos2, firstEle)
     return list
 
 
+# Beantwortet alle Tweets, die
+# 1. an diesen Bot gerichtet sind
+# 2. noch keine Antwort haben
 def answerToTweets():
     lastSeen = retrieve_lastSeenId(FILE_NAME_ID)
     mentions = api.mentions_timeline(lastSeen)
@@ -129,26 +127,25 @@ def getTemplatesFromFile(filepath):
     return contents
 
 
-# gibt einen einzelnen. zufälligen String wieder aus dem gegebenen Speichermedium (etwa Array oder List)
+# gibt einen einzelnen, zufälligen String wieder aus dem gegebenen Speichermedium (etwa Array oder List)
 def getRandomTemplate(templates):
     return random.choice(templates)
 
 
-# Sucht mit dem #Corona nach den aktuellsten deutschen Tweets
+# Sucht mit dem hashtag nach den aktuellsten deutschen Tweets
 def searchForTweets(api, hashtag):
     return api.search(hashtag, "de")
 
 
+# Antwortet auf den aktuellsten Tweet aus dem mitgegebenen Hashtag
 def replyToSearchedTweets(hashtag):
     search = searchForTweets(api, hashtag)
     nextTweet = search[0]
-    #   templates = getTemplatesFromFile("./templates.txt")
-    theme = "die Wirtschaftskonjunktur der deutschan Nation"
-    #   answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
     api.update_status("@" + nextTweet.user.screen_name + " I like this.", nextTweet.id)
     pass
 
 
+# Gibt die Top-Hashtags aus der Region aus
 def printTrends(place):
     trends_result = api.trends_place(place)
     for trend in trends_result[0]["trends"]:
