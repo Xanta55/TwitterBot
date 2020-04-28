@@ -3,10 +3,10 @@
 # Auch nicht in Kommentaren!                        #
 # ------------------------------------------------- #  
 
-#USER: UEBERALLBOTS
-#@: @Gerhards1966S
-#PW: BotsInMyPants
-#Dev-name: Piggud
+# USER: UEBERALLBOTS
+# @: @Gerhards1966S
+# PW: BotsInMyPants
+# Dev-name: Piggud
 import random
 import time
 import tweepy
@@ -48,12 +48,14 @@ def retrieve_lastSeenId(fileName):
     fRead.close()
     return lastSeenId
 
+
 # Speichert die zuletzt gesehene ID in der Textdatei
 def storeLastSeenId(lastSeenId, fileName):
     fWrite = open(fileName, 'w')
     fWrite.write(str(lastSeenId))
     fWrite.close()
     return
+
 
 # Swap function
 def swap(list, pos1, pos2):
@@ -64,6 +66,14 @@ def swap(list, pos1, pos2):
     list.insert(pos1, secondEle)
     list.insert(pos2, firstEle)
     return list
+
+
+def answerToTweets():
+    mentions = api.mentions()
+    for mention in mentions:
+        print(f"{str(mention.id)} - {mention.text}")
+    pass
+
 
 # Antowrtet auf Tweet
 def answer(templateWithContent, tweetToAnswer):
@@ -82,12 +92,12 @@ def dumbify(inputText, gradeOfDestruction):
     for x in inputText:
         listOfChars.append(x)
 
-    for y in range(round(gradeOfDestruction/2)):
+    for y in range(round(gradeOfDestruction / 2)):
         listOfChars.remove(random.choice(listOfChars))
 
-    for z in range(round(gradeOfDestruction/2)):
-        ranNum = random.randint(0, len(listOfChars)-1)
-        swap(listOfChars, ranNum, ranNum+1) # len(list)
+    for z in range(round(gradeOfDestruction / 2)):
+        ranNum = random.randint(0, len(listOfChars) - 1)
+        swap(listOfChars, ranNum, ranNum + 1)  # len(list)
 
     return "".join(listOfChars)
 
@@ -103,9 +113,11 @@ def getTemplatesFromFile(filepath):
     print("loaded templates!")
     return contents
 
+
 # gibt einen einzelnen. zufälligen String wieder aus dem gegebenen Speichermedium (etwa Array oder List)
 def getRandomTemplate(templates):
     return random.choice(templates)
+
 
 # Sucht mit dem #Corona nach den aktuellsten deutschen Tweets
 def searchForTweets(api, hashtag):
@@ -123,11 +135,19 @@ def replyToTweets(hashtag):
         api.update_status("@" + mention.user.screen_name + " Antwort", mention.id)
         time.sleep(5)
 
-#   templates = getTemplatesFromFile("./templates.txt")
+    #   templates = getTemplatesFromFile("./templates.txt")
     theme = "die Wirtschaftskonjunktur der deutschan Nation"
-#   answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
+    #   answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
     api.update_status("@" + nextTweet.user.screen_name + " I like this.", nextTweet.id)
     pass
+
+
+def printTrends(place):
+    trends_result = api.trends_place(place)
+    for trend in trends_result[0]["trends"]:
+        print(trend["name"])
+
+
 # ---------------------------------------------------------------------- #
 # MainLoop:
 
