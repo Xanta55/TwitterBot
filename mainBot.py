@@ -21,7 +21,7 @@ ACCESS_SECRET = 'kik1JvgMJ3zHVb9rD1FZ89yqp62XaqnlWSWbagGVLnMUT'
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
-FILE_NAME_ID = 'last_seen_id.txt'
+FILE_NAME_ID = 'lastSeenId.txt'
 FILE_NAME_TEMPLATES = 'templates.txt'
 
 # ---------------------------------------------------------------------- #
@@ -42,27 +42,27 @@ FILE_NAME_TEMPLATES = 'templates.txt'
 # bsp: answer(dumbify(prepTemplate(template, theme)), inputTweet)
 
 # Zieht sich die zuletzt gesehene ID aus der Textdatei
-def retrieve_last_seen_id(file_name):
-    f_read = open(file_name, 'r')
-    last_seen_id = int(float(f_read.read().strip()))
-    f_read.close()
-    return last_seen_id
+def retrieve_lastSeenId(fileName):
+    fRead = open(fileName, 'r')
+    lastSeenId = int(float(fRead.read().strip()))
+    fRead.close()
+    return lastSeenId
 
 # Speichert die zuletzt gesehene ID in der Textdatei
-def store_last_seen_id(last_seen_id, file_name):
-    f_write = open(file_name, 'w')
-    f_write.write(str(last_seen_id))
-    f_write.close()
+def storeLastSeenId(lastSeenId, fileName):
+    fWrite = open(fileName, 'w')
+    fWrite.write(str(lastSeenId))
+    fWrite.close()
     return
 
 # Swap function
 def swap(list, pos1, pos2):
     # popping both the elements from list
-    first_ele = list.pop(pos1)
-    second_ele = list.pop(pos2 - 1)
+    firstEle = list.pop(pos1)
+    secondEle = list.pop(pos2 - 1)
     # inserting in each others positions
-    list.insert(pos1, second_ele)
-    list.insert(pos2, first_ele)
+    list.insert(pos1, secondEle)
+    list.insert(pos2, firstEle)
     return list
 
 # Antowrtet auf Tweet
@@ -111,15 +111,15 @@ def getRandomTemplate(templates):
 def searchForTweets(api, hashtag):
     return api.search(hashtag)
 
-def reply_to_tweets(hashtag):
+def replyToTweets(hashtag):
     search = searchForTweets(api, hashtag)
     nextTweet = search[0]
-    last_seen_id = retrieve_last_seen_id(FILE_NAME_ID)
-    mentions = api.mentions_timeline(last_seen_id, tweet_mode = 'extended')
+    lastSeenId = retrieve_lastSeenId(FILE_NAME_ID)
+    mentions = api.mentions_timeline(lastSeenId, tweet_mode = 'extended')
 
     for mention in reversed(mentions):
-        last_seen_id = mention.id
-        store_last_seen_id(last_seen_id, FILE_NAME_ID)
+        lastSeenId = mention.id
+        storeLastSeenId(lastSeenId, FILE_NAME_ID)
         api.update_status("@" + mention.user.screen_name + " Antwort", mention.id)
         time.sleep(5)
 
@@ -132,7 +132,7 @@ def reply_to_tweets(hashtag):
 # MainLoop:
 
 while True:
-    reply_to_tweets("#Corona")
+    replyToTweets("#Corona")
     time.sleep(60)
     # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
 
