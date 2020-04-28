@@ -44,7 +44,7 @@ FILE_NAME_TEMPLATES = 'templates.txt'
 # Zieht sich die zuletzt gesehene ID aus der Textdatei
 def retrieve_last_seen_id(file_name):
     f_read = open(file_name, 'r')
-    last_seen_id = int(f_read.read().strip())
+    last_seen_id = int(float(f_read.read().strip()))
     f_read.close()
     return last_seen_id
 
@@ -114,12 +114,12 @@ def searchForTweets(api, hashtag):
 def reply_to_tweets(hashtag):
     search = searchForTweets(api, hashtag)
     nextTweet = search[0]
-#    last_seen_id = retrieve_last_seen_id(FILE_NAME_ID)
+    last_seen_id = retrieve_last_seen_id(FILE_NAME_ID)
     mentions = api.mentions_timeline(tweet_mode = 'extended')
 
     for mention in reversed(mentions):
-#        last_seen_id = mention.id
-#        store_last_seen_id(last_seen_id, FILE_NAME_ID)
+        last_seen_id = mention.id
+        store_last_seen_id(last_seen_id, FILE_NAME_ID)
         api.update_status("@" + mention.user.screen_name + " Antwort", mention.id)
         time.sleep(5)
 
