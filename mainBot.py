@@ -98,8 +98,8 @@ def getRandomTemplate(templates):
 def searchForTweets(api, hashtag):
     return api.search(hashtag)
 
-def reply_to_tweets():
-    search = searchForTweets(api, "#Corona")
+def reply_to_tweets(hashtag):
+    search = searchForTweets(api, hashtag)
     nextTweet = search[0]
     last_seen_id = retrieve_last_seen_id(FILE_NAME_ID)
     mentions = api.mentions_timeline(last_seen_id, tweet_mode = 'extended')
@@ -130,7 +130,7 @@ FILE_NAME_ID = 'last_seen_id.txt'
 FILE_NAME_TEMPLATES = 'templates.txt'
 
 while True:
-    reply_to_tweets()
+    reply_to_tweets("#Corona")
     time.sleep(60)
     # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
 
