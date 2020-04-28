@@ -143,7 +143,7 @@ def replyToTweets(hashtag):
 
 
 def printTrends(place):
-    trends_result = api.trends_place(place)
+    trends_result = api.trends_place(23424829, place)
     for trend in trends_result[0]["trends"]:
         print(trend["name"])
 
