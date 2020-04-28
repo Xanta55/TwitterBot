@@ -115,7 +115,7 @@ def reply_to_tweets(hashtag):
     search = searchForTweets(api, hashtag)
     nextTweet = search[0]
     last_seen_id = retrieve_last_seen_id(FILE_NAME_ID)
-    mentions = api.mentions_timeline(tweet_mode = 'extended')
+    mentions = api.mentions_timeline(last_seen_id, tweet_mode = 'extended')
 
     for mention in reversed(mentions):
         last_seen_id = mention.id
