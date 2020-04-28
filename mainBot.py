@@ -77,22 +77,19 @@ def swap(list, pos1, pos2):
 
 
 def answerToTweets():
-    mentions = api.mentions_timeline()
+    mentions = api.mentions_timeline(retrieve_lastSeenId(FILE_NAME_ID))
     templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
     templatesWithoutHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES_NO_HASH)
     for mention in mentions:
-        if not isAnswered(mention.id):
-            if mention.text.find("bot") != -1:
-                answer("Was redest du da?", mention)
+        if mention.text.find("bot") != -1:
+            answer("Was redest du da?", mention)
+        else:
+            if mention.text.find("#") != -1:
+                theme = mention.entities['hashtags'][0].get("text")
+                answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), theme), 1), mention)
             else:
-                if mention.text.find("#") != -1:
-                    theme = mention.entities['hashtags'][0].get("text")
-                    print(theme)
-                    answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), theme), 1), mention)
-                else:
-                    answer(dumbify(getRandomTemplate(templatesWithoutHashtag), 1), mention)
-            storeLastSeenId(mention.id, FILE_NAME_ID)
-
+                answer(dumbify(getRandomTemplate(templatesWithoutHashtag), 1), mention)
+        storeLastSeenId(mention.id, FILE_NAME_ID)
         time.sleep(10)
 
 
