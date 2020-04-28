@@ -53,16 +53,9 @@ def retrieve_lastSeenId(fileName):
 # Speichert die zuletzt gesehene ID in der Textdatei
 def storeLastSeenId(lastSeenId, fileName):
     fWrite = open(fileName, 'w')
-    fWrite.write(f"{str(lastSeenId)}\n")
+    fWrite.write(f"{str(lastSeenId)}")
     fWrite.close()
     return
-
-
-# Gibt true, falls id bereits eine Antwort bekam
-def isAnswered(id):
-    ids = open(FILE_NAME_ID, "r").readlines()
-    print(str(id) in ids)
-    return str(id) in ids
 
 
 # Swap function
@@ -77,20 +70,25 @@ def swap(list, pos1, pos2):
 
 
 def answerToTweets():
-    mentions = api.mentions_timeline(retrieve_lastSeenId(FILE_NAME_ID))
+    lastSeen = retrieve_lastSeenId(FILE_NAME_ID)
+    mentions = api.mentions_timeline(lastSeen)
     templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
     templatesWithoutHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES_NO_HASH)
     for mention in mentions:
-        if mention.text.find("bot") != -1:
-            answer("Was redest du da?", mention)
-        else:
-            if mention.text.find("#") != -1:
-                theme = mention.entities['hashtags'][0].get("text")
-                answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), theme), 1), mention)
+        if mention.id != lastSeen:
+            if mention.text.find("bot") != -1:
+                answer("Was redest du da?", mention)
             else:
-                answer(dumbify(getRandomTemplate(templatesWithoutHashtag), 1), mention)
+                if mention.text.find("#") != -1:
+                    theme = mention.entities['hashtags'][0].get("text")
+                    answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), theme), 1), mention)
+                else:
+                    answer(dumbify(getRandomTemplate(templatesWithoutHashtag), 1), mention)
+                pass
+            pass
         storeLastSeenId(mention.id, FILE_NAME_ID)
         time.sleep(10)
+        pass
 
 
 # Antwortet auf Tweet
@@ -140,6 +138,7 @@ def getRandomTemplate(templates):
 def searchForTweets(api, hashtag):
     return api.search(hashtag, "de")
 
+
 def replyToSearchedTweets(hashtag):
     search = searchForTweets(api, hashtag)
     nextTweet = search[0]
@@ -163,7 +162,4 @@ while True:
     answerToTweets()
     # replyToTweets("#Corona")
     # printTrends(23424829)
-    print("did a round!")
-    time.sleep(10)
-    # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
 
