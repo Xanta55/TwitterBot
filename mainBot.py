@@ -178,12 +178,16 @@ def chooseTrend(place):
 # Wählt zufällig aus, ob auf Mentions geantwortet, nach #Corona gesucht oder nach einen
 # der Top 3 Trends gesucht wird
 def chooseActivity():
+    print("Choosing activity...")
     rand = random.randint(0, 2)
     if rand == 0:
+        print("Answering Mentions...")
         answerToTweets()
     elif rand == 1:
+        print("Searching for Tweets with the Hashtag #Corona...")
         replyToSearchedTweets("#Corona")
     elif rand == 2:
+        print("Searching for trending Tweets...")
         replyToSearchedTweets(chooseTrend(23424829))
     pass
     
@@ -194,4 +198,5 @@ def chooseActivity():
 
 while True:
     chooseActivity()
+    print("Done, waiting for next round...")
     time.sleep(genBufferTime(60) * 60)
