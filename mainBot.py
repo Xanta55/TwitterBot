@@ -11,7 +11,6 @@ import random
 import time
 import tweepy
 
-
 # Bitte geheim halten:
 CONSUMER_KEY = '8KksbsyJJGDquDInzOhUnLDnT'
 CONSUMER_SECRET = 'Wpadb0rR8LQeFEocJuED3Uix6UGIiQltaqIeWxCy3PvjxM5xBn'
@@ -20,11 +19,12 @@ ACCESS_SECRET = 'kik1JvgMJ3zHVb9rD1FZ89yqp62XaqnlWSWbagGVLnMUT'
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
-api = tweepy.API(auth)
+api = tweepy.API(auth, wait_on_rate_limit=True)
 FILE_NAME_ID = 'lastSeenId.txt'
-FILE_NAME_ID_SEARCH = 'lastSeenIdSearch.txt'
+FILE_NAME_ID_MENTIONS = 'lastSeenIdMentions.txt'
 FILE_NAME_TEMPLATES = 'templatesToFill.txt'
 FILE_NAME_TEMPLATES_NO_HASH = 'templatesDone.txt'
+
 
 # ---------------------------------------------------------------------- #
 # Hier alles an Notizen:
@@ -39,14 +39,17 @@ FILE_NAME_TEMPLATES_NO_HASH = 'templatesDone.txt'
 
 # ---------------------------------------------------------------------- #
 
-# TODO
-# answer(String templateMitFill, Tweet tweetDerBeantwortetWird)
-# bsp: answer(dumbify(prepTemplate(template, theme)), inputTweet)
+# gibt zufällige Zahl mit 10% Abweichung um x aus
+def genBufferTime(x):
+    x_up = x * 1.10
+    x_down = x * 0.9
+    return random.randint(x_down, x_up)
+
 
 # Zieht sich die zuletzt gesehene ID aus der Textdatei
 def retrieve_lastSeenId(fileName):
     fRead = open(fileName, 'r')
-    lastSeenId = int(float(fRead.read().strip()))
+    lastSeenId = int(fRead.read().strip())
     fRead.close()
     return lastSeenId
 
@@ -54,44 +57,52 @@ def retrieve_lastSeenId(fileName):
 # Speichert die zuletzt gesehene ID in der Textdatei
 def storeLastSeenId(lastSeenId, fileName):
     fWrite = open(fileName, 'w')
-    fWrite.write(f"{str(lastSeenId)}\n")
+    fWrite.write(f"{str(lastSeenId)}")
     fWrite.close()
     return
 
 
-# Gibt true, falls id bereits eine Antwort bekam
-def isAnswered(id):
-    ids = open(FILE_NAME_ID, "r").readlines()
-    print(str(id) in ids)
-    return str(id) in ids
-
-
-# Swap function
+# Swap function für Elemente einer Liste
 def swap(list, pos1, pos2):
-    # popping both the elements from list
     firstEle = list.pop(pos1)
     secondEle = list.pop(pos2 - 1)
-    # inserting in each others positions
     list.insert(pos1, secondEle)
     list.insert(pos2, firstEle)
     return list
 
 
+# Beantwortet alle Tweets, die
+# 1. an diesen Bot gerichtet sind
+# 2. noch keine Antwort haben
 def answerToTweets():
-    mentions = api.mentions_timeline(retrieve_lastSeenId(FILE_NAME_ID), tweet_mode = 'extended')
+    lastSeen = retrieve_lastSeenId(FILE_NAME_ID_MENTIONS)
+    print(lastSeen)
+    if lastSeen < 1:
+        mentions = api.mentions_timeline()
+        pass
+    else:
+        mentions = api.mentions_timeline(lastSeen)
+        pass
     templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
     templatesWithoutHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES_NO_HASH)
     for mention in mentions:
-        if mention.full_text.find("bot") != -1:
-            answer("Was redest du da?", mention)
-        else:
-            if mention.full_text.find("#") != -1:
-                theme = mention.entities['hashtags'][0].get("text")
-                answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), theme), 1), mention)
+        if mention.id != lastSeen:
+            if mention.text.find("bot") != -1:
+                answer("Was redest du da?", mention)
+                pass
             else:
-                answer(dumbify(getRandomTemplate(templatesWithoutHashtag), 1), mention)
-        storeLastSeenId(mention.id, FILE_NAME_ID)
-        time.sleep(10)
+                if mention.text.find("#") != -1:
+                    theme = mention.entities['hashtags'][0].get("text")
+                    answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), theme), 2), mention)
+                else:
+                    answer(dumbify(getRandomTemplate(templatesWithoutHashtag), 2), mention)
+                pass
+            pass
+        else:
+            print("no new Entries!")
+        storeLastSeenId(mention.id, FILE_NAME_ID_MENTIONS)
+        time.sleep(genBufferTime(90))
+        pass
 
 
 # Antwortet auf Tweet
@@ -132,7 +143,7 @@ def getTemplatesFromFile(filepath):
     return contents
 
 
-# gibt einen einzelnen. zufälligen String wieder aus dem gegebenen Speichermedium (etwa Array oder List)
+# gibt einen einzelnen, zufälligen String wieder aus dem gegebenen Speichermedium (etwa Array oder List)
 def getRandomTemplate(templates):
     return random.choice(templates)
 
@@ -141,15 +152,18 @@ def getRandomTemplate(templates):
 def searchForTweets(api, hashtag, lastId):
     return api.search(q = hashtag, lang = "de", since_id = lastId)
 
+
+# Antwortet auf den aktuellsten Tweet aus dem mitgegebenen Hashtag
 def replyToSearchedTweets(hashtag):
-    search = searchForTweets(api, hashtag, retrieve_lastSeenId(FILE_NAME_ID_SEARCH))
+    search = searchForTweets(api, hashtag, retrieve_lastSeenId(FILE_NAME_ID))
     nextTweet = search[0]
     templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
-    storeLastSeenId(nextTweet.id, FILE_NAME_ID_SEARCH)
+    storeLastSeenId(nextTweet.id, FILE_NAME_ID)
     answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), hashtag), 1), nextTweet)
     pass
 
 
+# Gibt die Top-Hashtags aus der Region aus
 def printTrends(place):
     trends_result = api.trends_place(place)
     for trend in trends_result[0]["trends"]:
@@ -161,8 +175,6 @@ def printTrends(place):
 
 while True:
     answerToTweets()
-#    replyToSearchedTweets("#Corona")
-    print("did a round!")
-    time.sleep(60)
-    # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
-
+    # replyToTweets("#Corona")
+    # printTrends(23424829)
+    time.sleep(genBufferTime(120))
