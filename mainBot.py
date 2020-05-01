@@ -22,6 +22,7 @@ auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 FILE_NAME_ID = 'lastSeenId.txt'
+FILE_NAME_ID_SEARCH = 'lastSeenIdSearch.txt'
 FILE_NAME_TEMPLATES = 'templatesToFill.txt'
 FILE_NAME_TEMPLATES_NO_HASH = 'templatesDone.txt'
 
@@ -77,14 +78,14 @@ def swap(list, pos1, pos2):
 
 
 def answerToTweets():
-    mentions = api.mentions_timeline(retrieve_lastSeenId(FILE_NAME_ID))
+    mentions = api.mentions_timeline(retrieve_lastSeenId(FILE_NAME_ID), tweet_mode = 'extended')
     templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
     templatesWithoutHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES_NO_HASH)
     for mention in mentions:
-        if mention.text.find("bot") != -1:
+        if mention.full_text.find("bot") != -1:
             answer("Was redest du da?", mention)
         else:
-            if mention.text.find("#") != -1:
+            if mention.full_text.find("#") != -1:
                 theme = mention.entities['hashtags'][0].get("text")
                 answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), theme), 1), mention)
             else:
@@ -137,16 +138,15 @@ def getRandomTemplate(templates):
 
 
 # Sucht mit dem #Corona nach den aktuellsten deutschen Tweets
-def searchForTweets(api, hashtag):
-    return api.search(hashtag, "de")
+def searchForTweets(api, hashtag, lastId):
+    return api.search(q = hashtag, lang = "de", since_id = lastId)
 
 def replyToSearchedTweets(hashtag):
-    search = searchForTweets(api, hashtag)
+    search = searchForTweets(api, hashtag, retrieve_lastSeenId(FILE_NAME_ID_SEARCH))
     nextTweet = search[0]
-    #   templates = getTemplatesFromFile("./templates.txt")
-    theme = "die Wirtschaftskonjunktur der deutschan Nation"
-    #   answer(dumbify(prepTemplate(getRandomTemplate(templates), theme)), nextTweet)
-    api.update_status("@" + nextTweet.user.screen_name + " I like this.", nextTweet.id)
+    templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
+    storeLastSeenId(nextTweet.id, FILE_NAME_ID_SEARCH)
+    answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), hashtag), 1), nextTweet)
     pass
 
 
@@ -161,9 +161,8 @@ def printTrends(place):
 
 while True:
     answerToTweets()
-    # replyToTweets("#Corona")
-    # printTrends(23424829)
+#    replyToSearchedTweets("#Corona")
     print("did a round!")
-    time.sleep(10)
+    time.sleep(60)
     # 1 Minute sollte reichen, um nachdenken und tweet formulieren zu simulieren. Vllt mehr random
 
