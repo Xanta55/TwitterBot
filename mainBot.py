@@ -148,13 +148,16 @@ def getRandomTemplate(templates):
     return random.choice(templates)
 
 
-# Sucht mit dem #Corona nach den aktuellsten deutschen Tweets
+# Sucht die aktuellsten deutschen Tweets zu einem gewünschten Hashtag
 def searchForTweets(api, hashtag, lastId):
     return api.search(q = hashtag, lang = "de", since_id = lastId)
 
 
-# Antwortet auf den aktuellsten Tweet aus dem mitgegebenen Hashtag
+# Sucht nach den aktuellsten Tweets mit dem übergebenen Hashtag
+# Checkt, ob auf diesen Tweet nicht bereits geantwortet wurde
+# Fügt ein Hashtag für die Antwort an, falls nicht vorhanden
 def replyToSearchedTweets(hashtag):
+    if not hashtag.find("#") : hashtag = "#" + hashtag
     search = searchForTweets(api, hashtag, retrieve_lastSeenId(FILE_NAME_ID))
     nextTweet = search[0]
     templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
@@ -164,17 +167,31 @@ def replyToSearchedTweets(hashtag):
 
 
 # Gibt die Top-Hashtags aus der Region aus
-def printTrends(place):
+# WOEID Code für Deutschland 23424829
+def chooseTrend(place):
     trends_result = api.trends_place(place)
-    for trend in trends_result[0]["trends"]:
-        print(trend["name"])
+    data = trends_result[0] 
+    trends = data['trends']
+    names = [trend['name'] for trend in trends]
+    return names[random.randint(0, 2)]
 
+# Wählt zufällig aus, ob auf Mentions geantwortet, nach #Corona gesucht oder nach einen
+# der Top 3 Trends gesucht wird
+def chooseActivity():
+    rand = random.randint(0, 2)
+    if rand == 0:
+        answerToTweets()
+    elif rand == 1:
+        replyToSearchedTweets("#Corona")
+    elif rand == 2:
+        replyToSearchedTweets(chooseTrend(23424829))
+    pass
+    
 
 # ---------------------------------------------------------------------- #
 # MainLoop:
+# Wartet nach jeder Aktivität 54-66 Minuten
 
 while True:
-    answerToTweets()
-    # replyToTweets("#Corona")
-    # printTrends(23424829)
-    time.sleep(genBufferTime(120))
+    chooseActivity()
+    time.sleep(genBufferTime(60) * 60)
