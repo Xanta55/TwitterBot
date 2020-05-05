@@ -113,6 +113,7 @@ def answerToTweets():
 # Antwortet auf Tweet
 def answer(templateWithContent, tweetToAnswer):
     api.update_status(f"@{tweetToAnswer.user.screen_name} {templateWithContent}", tweetToAnswer.id)
+    pass
 
 
 # Füllt einen String mit Themen
@@ -169,8 +170,16 @@ def replyToSearchedTweets(hashtag):
     answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), hashtag), 1), nextTweet)
     pass
 
+# Postet einen zufälligen Tweet über das Thema Corona. Wurde dieser Tweet bereits gepostet,
+# passiert gar nichts und der Bot pausiert.
 def tweetCoronaPost():
-    api.update_status(getRandomTemplate(getTemplatesFromFile(FILE_NAME_TEMPLATES_CORONA)))
+    try:
+        api.update_status(getRandomTemplate(getTemplatesFromFile(FILE_NAME_TEMPLATES_CORONA)))
+    except tweepy.TweepError as error:
+        if error.api_code == 187:
+            print('Duplicate message, going on break...')
+        else:
+            raise error
     pass
 
 
