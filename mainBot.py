@@ -104,7 +104,7 @@ def answerToTweets():
         storeLastSeenId(mention.id, FILE_NAME_ID_MENTIONS)
         time.sleep(genBufferTime(90))
         pass
-    if noRepliesYet is 1:
+    if noRepliesYet == 1:
         print("no new Replies!")
         chooseActivity(noRepliesYet)
         pass
