@@ -76,6 +76,7 @@ def swap(list, pos1, pos2):
 # 1. an diesen Bot gerichtet sind
 # 2. noch keine Antwort haben
 def answerToTweets():
+    noRepliesYet = 1
     lastSeen = retrieve_lastSeenId(FILE_NAME_ID_MENTIONS)
     print(lastSeen)
     if lastSeen < 1:
@@ -88,6 +89,7 @@ def answerToTweets():
     templatesWithoutHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES_NO_HASH)
     for mention in mentions:
         if mention.id != lastSeen:
+            noRepliesYet = 0
             if mention.text.find("bot") != -1:
                 answer("Was redest du da?", mention)
                 pass
@@ -99,10 +101,12 @@ def answerToTweets():
                     answer(dumbify(getRandomTemplate(templatesWithoutHashtag), 2), mention)
                 pass
             pass
-        else:
-            print("no new Entries!")
         storeLastSeenId(mention.id, FILE_NAME_ID_MENTIONS)
         time.sleep(genBufferTime(90))
+        pass
+    if noRepliesYet is 1:
+        print("no new Replies!")
+        chooseActivity(noRepliesYet)
         pass
 
 
@@ -182,9 +186,9 @@ def chooseTrend(place):
 
 # Wählt zufällig aus, ob auf Mentions geantwortet, nach #Corona gesucht oder nach einen
 # der Top 3 Trends gesucht wird
-def chooseActivity():
+def chooseActivity(min):
     print("Choosing activity...")
-    rand = random.randint(0, 2)
+    rand = random.randint(min, 2)
     if rand == 0:
         print("Answering Mentions...")
         answerToTweets()
