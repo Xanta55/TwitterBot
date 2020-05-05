@@ -24,6 +24,7 @@ FILE_NAME_ID = 'lastSeenId.txt'
 FILE_NAME_ID_MENTIONS = 'lastSeenIdMentions.txt'
 FILE_NAME_TEMPLATES = 'templatesToFill.txt'
 FILE_NAME_TEMPLATES_NO_HASH = 'templatesDone.txt'
+FILE_NAME_TEMPLATES_CORONA = 'templatesCorona.txt'
 
 
 # ---------------------------------------------------------------------- #
@@ -165,6 +166,10 @@ def replyToSearchedTweets(hashtag):
     answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), hashtag), 1), nextTweet)
     pass
 
+def tweetCoronaPost():
+    api.update_status(getRandomTemplate(getTemplatesFromFile(FILE_NAME_TEMPLATES_CORONA)))
+    pass
+
 
 # Gibt die Top-Hashtags aus der Region aus
 # WOEID Code für Deutschland 23424829
@@ -197,6 +202,7 @@ def chooseActivity():
 # Wartet nach jeder Aktivität 54-66 Minuten
 
 while True:
-    chooseActivity()
+#    chooseActivity()
+    tweetCoronaPost()
     print("Done, waiting for next round...")
     time.sleep(genBufferTime(60) * 60)
