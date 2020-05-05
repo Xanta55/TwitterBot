@@ -162,7 +162,6 @@ def searchForTweets(api, hashtag, lastId):
 # Checkt, ob auf diesen Tweet nicht bereits geantwortet wurde
 # Fügt ein Hashtag für die Antwort an, falls nicht vorhanden
 def replyToSearchedTweets(hashtag):
-    if not hashtag.find("#") : hashtag = "#" + hashtag
     search = searchForTweets(api, hashtag, retrieve_lastSeenId(FILE_NAME_ID))
     nextTweet = search[0]
     templatesWithHashtag = getTemplatesFromFile(FILE_NAME_TEMPLATES)
@@ -188,7 +187,7 @@ def chooseTrend(place):
 # der Top 3 Trends gesucht wird
 def chooseActivity(min):
     print("Choosing activity...")
-    rand = random.randint(min, 2)
+    rand = random.randint(min, 4)
     if rand == 0:
         print("Answering Mentions...")
         answerToTweets()
@@ -198,15 +197,17 @@ def chooseActivity(min):
     elif rand == 2:
         print("Searching for trending Tweets...")
         replyToSearchedTweets(chooseTrend(23424829))
+    elif rand == 3:
+        print("Tweeting about Corona...")
+        tweetCoronaPost()
     pass
     
 
 # ---------------------------------------------------------------------- #
 # MainLoop:
-# Wartet nach jeder Aktivität 54-66 Minuten
+# Wartet nach jeder Aktivität 27-33 Minuten
 
 while True:
-#    chooseActivity()
-    tweetCoronaPost()
+    chooseActivity(0)
     print("Done, waiting for next round...")
-    time.sleep(genBufferTime(60) * 60)
+    time.sleep(genBufferTime(30) * 60)
