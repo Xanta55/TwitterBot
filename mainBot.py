@@ -216,7 +216,7 @@ def chooseActivity(min):
 
 # ---------------------------------------------------------------------- #
 # MainLoop:
-# Wartet nach jeder Aktivität 27-33 Minuten
+# Wartet nach jeder Aktivität 54-66 Minuten
 
 while True:
     chooseActivity(0)
