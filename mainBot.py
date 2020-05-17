@@ -170,8 +170,10 @@ def replyToSearchedTweets(hashtag):
     answer(dumbify(prepTemplate(getRandomTemplate(templatesWithHashtag), hashtag), 1), nextTweet)
     pass
 
-# Postet einen zufälligen Tweet über das Thema Corona. Wurde dieser Tweet bereits gepostet,
+# Postet einen zufälligen Tweet über das Thema Corona. Wurde dieser Tweet bereits direkt vorher gepostet,
 # passiert gar nichts und der Bot pausiert.
+# Allerdings kann ein Tweet aktuell noch doppelt gepostet werden, sofern ein anderer Tweet zwischendurch
+# gepostet wurde.
 def tweetCoronaPost():
     try:
         api.update_status(getRandomTemplate(getTemplatesFromFile(FILE_NAME_TEMPLATES_CORONA)))
@@ -196,7 +198,7 @@ def chooseTrend(place):
 # der Top 3 Trends gesucht wird
 def chooseActivity(min):
     print("Choosing activity...")
-    rand = random.randint(min, 4)
+    rand = random.randint(min, 3)
     if rand == 0:
         print("Answering Mentions...")
         answerToTweets()
@@ -206,9 +208,9 @@ def chooseActivity(min):
     elif rand == 2:
         print("Searching for trending Tweets...")
         replyToSearchedTweets(chooseTrend(23424829))
-    elif rand == 3:
-        print("Tweeting about Corona...")
-        tweetCoronaPost()
+#    elif rand == 3:
+#        print("Tweeting about Corona...")
+#        tweetCoronaPost()
     pass
     
 
@@ -219,4 +221,4 @@ def chooseActivity(min):
 while True:
     chooseActivity(0)
     print("Done, waiting for next round...")
-    time.sleep(genBufferTime(30) * 60)
+    time.sleep(genBufferTime(60) * 60)
