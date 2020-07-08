@@ -208,9 +208,9 @@ def chooseActivity(min):
     elif rand == 2:
         print("Searching for trending Tweets...")
         replyToSearchedTweets(chooseTrend(23424829))
-#    elif rand == 3:
-#        print("Tweeting about Corona...")
-#        tweetCoronaPost()
+    elif rand == 3:
+        print("Tweeting about Corona...")
+        tweetCoronaPost()
     pass
     
 
